@@ -1,0 +1,7 @@
+name: flat_empty
+map:
+  width: 160
+  height: 80
+  resolution_m: 0.10
+start: {x: 2.0, y: 4.0, yaw: 0.0}
+goal: {x: 13.0, y: 4.0, yaw: 0.0}

@@ -1,0 +1,7 @@
+length: 1.0
+turn: 0.25
+slope: 2.0
+roughness: 1.0
+safety: 4.0
+reverse: 1.5
+history: 0.5

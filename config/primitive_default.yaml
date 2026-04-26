@@ -1,0 +1,4 @@
+duration_s: 1.0
+integration_step_s: 0.1
+linear_velocities_mps: [-0.3, 0.3, 0.6, 1.0]
+angular_velocities_radps: [-0.6, -0.3, 0.0, 0.3, 0.6]

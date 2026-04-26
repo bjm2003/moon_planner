@@ -504,3 +504,46 @@ moon_planner/
 - 不要只关注可达路径；必须从第一版就输出诊断信息，否则后续难以证明 1Hz、99% 成功率和资源占用指标。
 - 初期不需要立即做 NPU 加速；但数据结构和模块边界要避免后续无法迁移。
 - 如果后续要创建代码，先按本文第 5 节创建工程骨架，再实现第 6 节阶段 1。
+
+## 9. 当前工程进展
+
+已完成第一版可编译工程骨架：
+
+- CMake/C++17 核心库 `moon_planner_core`。
+- 基础类型、状态码、几何工具、耗时统计。
+- 规划、车辆、代价配置结构体。
+- 栅格索引、二维占据栅格、高程栅格、通行性代价图、历史层和地图融合占位。
+- 滑移转向运动学积分、运动约束、运动基元生成和基元库查询。
+- 车体圆形包络碰撞检测、基元代价、欧氏距离启发式。
+- 最小状态栅格/Hybrid A* 搜索链路。
+- `LatticePlanner` 统一规划器入口。
+- 轨迹生成、CSV 输出、诊断格式化。
+- CLI：`moon_planner_cli`。
+- 工具：`generate_primitives`、`benchmark_planner`。
+- 测试：`test_grid_index`、`test_skid_steer_model`、`test_planner_flat_map`。
+
+当前验证命令：
+
+```bash
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug
+cmake --build build -j2
+ctest --test-dir build --output-on-failure
+./build/moon_planner_cli /tmp/moon_trajectory.csv
+./build/generate_primitives /tmp/moon_primitives_summary.txt
+./build/benchmark_planner
+```
+
+最近一次验证结果：
+
+- `ctest`：3/3 通过。
+- `moon_planner_cli`：返回 `status=success`，规划耗时约 175 ms，扩展节点 100，轨迹点 20。
+- `generate_primitives`：生成 16 个航向组，共 256 条运动基元。
+- `benchmark_planner`：10 次平坦场景运行，成功率 1.0。
+
+当前限制：
+
+- 配置文件已创建，但尚未实现完整 YAML 参数解析，默认参数仍来自 C++ 结构体。
+- 碰撞检测当前采用圆形包络，后续应切换到矩形/多边形车体足迹与分离轴检测。
+- 搜索启发式当前为欧氏距离，后续应加入航向代价、HLUT 或 Reeds-Shepp/Dubins 近似。
+- CLI 场景仍是内置最小示例，后续需要读取 `scenarios/*.yaml`。
+- 局部避障、近障恢复、历史障碍衰减和多分辨率实验仍待实现。
