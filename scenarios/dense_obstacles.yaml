@@ -1,0 +1,14 @@
+name: dense_obstacles
+map:
+  width: 160
+  height: 80
+  resolution_m: 0.10
+start: {x: 2.0, y: 4.0, yaw: 0.0}
+goal: {x: 13.0, y: 4.0, yaw: 0.0}
+obstacle_cells:
+  - {x0: 55, y0: 10, x1: 58, y1: 28}
+  - {x0: 55, y0: 52, x1: 58, y1: 70}
+  - {x0: 88, y0: 0, x1: 92, y1: 25}
+  - {x0: 88, y0: 55, x1: 92, y1: 79}
+  - {x0: 118, y0: 12, x1: 121, y1: 30}
+  - {x0: 118, y0: 50, x1: 121, y1: 68}

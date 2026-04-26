@@ -14,5 +14,6 @@ double Distance2D(double x0, double y0, double x1, double y1);
 Point2D RotatePoint(const Point2D& point, double yaw_rad);
 Point2D TransformPoint(const Point2D& local_point, const Pose2D& pose);
 std::vector<Point2D> TransformPolygon(const std::vector<Point2D>& local_polygon, const Pose2D& pose);
+bool IsPointInsideConvexPolygon(const Point2D& point, const std::vector<Point2D>& polygon);
 
 }  // namespace moon_planner

@@ -1,13 +1,25 @@
 #include "moon_planner/config/cost_config.hpp"
 #include "moon_planner/config/planner_config.hpp"
 #include "moon_planner/config/vehicle_config.hpp"
+#include "moon_planner/io/scenario_reader.hpp"
 #include "moon_planner/io/trajectory_writer.hpp"
 #include "moon_planner/model/motion_constraints.hpp"
 #include "moon_planner/planner/lattice_planner.hpp"
 #include "moon_planner/primitives/primitive_generator.hpp"
 #include "moon_planner/runtime/diagnostics.hpp"
 
+#include <exception>
 #include <iostream>
+#include <string>
+
+namespace {
+
+bool HasYamlExtension(const std::string& path) {
+  return path.size() >= 5 &&
+         (path.substr(path.size() - 5) == ".yaml" || path.substr(path.size() - 4) == ".yml");
+}
+
+}  // namespace
 
 int main(int argc, char** argv) {
   using namespace moon_planner;
@@ -21,33 +33,43 @@ int main(int argc, char** argv) {
   PrimitiveGenerator generator;
   PrimitiveLibrary library = generator.Generate(planner_config, primitive_config, constraints);
 
-  OccupancyGrid occupancy(GridIndex(160, 80, planner_config.grid_resolution_m), OccupancyGrid::kFree);
-  for (int y = 70; y < 75; ++y) {
-    occupancy.SetCell(70, y, OccupancyGrid::kOccupied);
+  ScenarioReader scenario_reader;
+  PlanningScenario scenario;
+  std::string trajectory_output_path;
+  try {
+    if (argc > 1 && HasYamlExtension(argv[1])) {
+      scenario = scenario_reader.Read(argv[1]);
+      if (argc > 2) {
+        trajectory_output_path = argv[2];
+      }
+    } else {
+      scenario = scenario_reader.DefaultScenario();
+      if (argc > 1) {
+        trajectory_output_path = argv[1];
+      }
+    }
+  } catch (const std::exception& error) {
+    std::cerr << "failed to read scenario: " << error.what() << '\n';
+    return 2;
   }
 
-  PlanningRequest request;
-  request.start.x = 2.0;
-  request.start.y = 4.0;
-  request.start.yaw = 0.0;
-  request.goal.x = 13.0;
-  request.goal.y = 4.0;
-  request.goal.yaw = 0.0;
+  PlanningRequest request = scenario.request;
   request.allow_reverse = planner_config.allow_reverse;
   request.goal_tolerance_xy_m = planner_config.goal_tolerance_xy_m;
   request.goal_tolerance_yaw_rad = planner_config.goal_tolerance_yaw_rad;
 
   LatticePlanner planner(planner_config, vehicle_config, cost_config, std::move(library));
-  PlanningResult result = planner.Plan(request, occupancy);
+  PlanningResult result = planner.Plan(request, scenario.occupancy);
 
+  std::cout << "scenario=" << scenario.name << '\n';
   std::cout << "status=" << ToString(result.status) << '\n';
   std::cout << FormatDiagnostics(result.diagnostics) << '\n';
   std::cout << "states=" << result.states.size() << ", trajectory_points=" << result.trajectory.size() << '\n';
 
-  if (argc > 1) {
+  if (!trajectory_output_path.empty()) {
     TrajectoryWriter writer;
-    if (!writer.WriteCsv(result.trajectory, argv[1])) {
-      std::cerr << "failed to write trajectory: " << argv[1] << '\n';
+    if (!writer.WriteCsv(result.trajectory, trajectory_output_path)) {
+      std::cerr << "failed to write trajectory: " << trajectory_output_path << '\n';
       return 2;
     }
   }

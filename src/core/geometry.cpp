@@ -46,4 +46,27 @@ std::vector<Point2D> TransformPolygon(const std::vector<Point2D>& local_polygon,
   return transformed;
 }
 
+bool IsPointInsideConvexPolygon(const Point2D& point, const std::vector<Point2D>& polygon) {
+  if (polygon.size() < 3) {
+    return false;
+  }
+  double previous_cross = 0.0;
+  for (std::size_t i = 0; i < polygon.size(); ++i) {
+    const Point2D& a = polygon[i];
+    const Point2D& b = polygon[(i + 1) % polygon.size()];
+    const double cross = (b.x - a.x) * (point.y - a.y) - (b.y - a.y) * (point.x - a.x);
+    if (std::abs(cross) < 1e-9) {
+      continue;
+    }
+    if (previous_cross == 0.0) {
+      previous_cross = cross;
+      continue;
+    }
+    if ((previous_cross > 0.0 && cross < 0.0) || (previous_cross < 0.0 && cross > 0.0)) {
+      return false;
+    }
+  }
+  return true;
+}
+
 }  // namespace moon_planner
