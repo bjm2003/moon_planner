@@ -10,5 +10,6 @@
 - `goal: {x, y, yaw}`：终点。
 - `obstacle_cells`：占据栅格矩形列表，每项为 `{x0, y0, x1, y1}`，闭区间。
 - `slope_regions`：坡度矩形列表，每项为 `{x0, y0, x1, y1, slope_rad, axis}`，`axis` 可选 `x` 或 `y`，用于生成简化 DEM 坡面。
+- `history_cells`：历史代价矩形列表，每项为 `{x0, y0, x1, y1, type}`，`type` 支持 `visited`、`obstacle`、`failed`。
 
-后续需要扩展负障碍物、历史障碍、感知视场和动态回放时间序列。
+后续需要扩展负障碍物、感知视场和动态回放时间序列。

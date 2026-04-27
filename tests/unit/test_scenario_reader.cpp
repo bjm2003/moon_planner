@@ -16,5 +16,10 @@ int main() {
   const auto slope_scenario = reader.Read("scenarios/slope_region.yaml");
   assert(slope_scenario.elevation.IsValid());
   assert(slope_scenario.elevation.SlopeMagnitude(80, 15) > 0.35);
+
+  const auto history_scenario = reader.Read("scenarios/history_obstacles.yaml");
+  assert(history_scenario.history.IsValid());
+  assert(history_scenario.history.Weight(75, 15) > 0.0);
+  assert(history_scenario.history.Weight(95, 62) > history_scenario.history.Weight(75, 15));
   return 0;
 }

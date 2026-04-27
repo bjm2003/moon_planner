@@ -36,10 +36,16 @@ int main() {
   assert(std::abs(local_request.goal.yaw) < 1e-9);
 
   OccupancyGrid occupancy(GridIndex(160, 80, planner_config.grid_resolution_m), OccupancyGrid::kFree);
+  HistoryLayer history(occupancy.index());
+  history.MarkVisited(3.0, 1.0);
   const PlanningResult result = planner.Plan(request, occupancy);
   assert(result.status == PlannerStatus::kSuccess);
   assert(result.states.size() > 2);
   assert(!result.diagnostics.message.empty());
+
+  const PlanningResult history_result = planner.Plan(request, occupancy, nullptr, &history);
+  assert(history_result.status == PlannerStatus::kSuccess);
+  assert(history_result.states.size() > 2);
 
   return 0;
 }

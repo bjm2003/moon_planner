@@ -518,11 +518,11 @@ moon_planner/
 - 占据障碍、安全距离膨胀和坡度代价地图。
 - 最小状态栅格/Hybrid A* 搜索链路。
 - `LatticePlanner` 统一规划器入口。
-- `LocalPlanner` 局部规划入口，支持按 `planning_horizon_m` 裁剪远距离目标。
+- `LocalPlanner` 局部规划入口，支持按 `planning_horizon_m` 裁剪远距离目标并接收历史层代价。
 - 轨迹生成、CSV 输出、诊断格式化。
 - CLI：`moon_planner_cli`，支持默认场景和 `scenarios/*.yaml` 输入。
 - 工具：`generate_primitives`、`benchmark_planner`。
-- 测试：`test_grid_index`、`test_skid_steer_model`、`test_collision_checker`、`test_cost_map`、`test_local_planner`、`test_history_layer`、`test_yaml_loader`、`test_scenario_reader`、`test_planner_flat_map`、`test_planner_dense_obstacles`、`test_planner_slope_map`。
+- 测试：`test_grid_index`、`test_skid_steer_model`、`test_collision_checker`、`test_cost_map`、`test_local_planner`、`test_history_layer`、`test_yaml_loader`、`test_scenario_reader`、`test_planner_flat_map`、`test_planner_dense_obstacles`、`test_planner_slope_map`、`test_planner_history_obstacles`。
 
 当前验证命令：
 
@@ -533,16 +533,18 @@ ctest --test-dir build --output-on-failure
 ./build/moon_planner_cli
 ./build/moon_planner_cli scenarios/dense_obstacles.yaml /tmp/moon_dense_trajectory.csv
 ./build/moon_planner_cli scenarios/slope_region.yaml /tmp/moon_slope_trajectory.csv
+./build/moon_planner_cli scenarios/history_obstacles.yaml /tmp/moon_history_trajectory.csv
 ./build/generate_primitives /tmp/moon_primitives_summary.txt
 ./build/benchmark_planner
 ```
 
 最近一次验证结果：
 
-- `ctest`：11/11 通过。
+- `ctest`：12/12 通过。
 - `moon_planner_cli` 默认场景：返回 `status=success`，扩展节点 100，轨迹点 20。
 - `moon_planner_cli scenarios/dense_obstacles.yaml /tmp/moon_dense_trajectory.csv`：返回 `status=success`，扩展节点 100，轨迹点 20。
 - `moon_planner_cli scenarios/slope_region.yaml /tmp/moon_slope_trajectory.csv`：返回 `status=success`，扩展节点 100，轨迹点 20。
+- `moon_planner_cli scenarios/history_obstacles.yaml /tmp/moon_history_trajectory.csv`：返回 `status=success`，扩展节点 100，轨迹点 20。
 - `generate_primitives`：生成 16 个航向组，共 256 条运动基元。
 - `benchmark_planner`：10 次平坦场景运行，成功率 1.0。
 
@@ -552,13 +554,12 @@ ctest --test-dir build --output-on-failure
 - 碰撞检测已采用多边形车体足迹，但尚未加入更完整的分离轴边交检测和动态安全裕度。
 - 搜索启发式当前为欧氏距离，后续应加入航向代价、HLUT 或 Reeds-Shepp/Dubins 近似。
 - `LocalPlanner` 目前实现局部目标裁剪，尚未加入动态障碍局部避让和恢复动作。
-- 历史层已有权重和衰减能力，但尚未从场景/运行时上下文自动维护。
+- 历史层已有权重、衰减和场景输入能力，但尚未由运行时上下文自动维护。
 - 近障恢复和多分辨率实验仍待实现。
 
 总体路线复盘和后续阶段规划见 `docs/roadmap.md`。
 
 下一阶段计划：
 
-- 将 `HistoryLayer` 接入规划上下文或场景输入，形成可复现的历史障碍规划场景。
 - 为 `RecoveryPlanner` 增加近障恢复入口：检测局部目标失败后生成后退或侧向重试请求。
 - 增加历史障碍和近障恢复集成测试。

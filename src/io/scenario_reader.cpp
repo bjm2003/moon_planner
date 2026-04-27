@@ -94,6 +94,35 @@ void ApplySlopeRegions(const std::string& text, ElevationGrid* elevation) {
   }
 }
 
+void ApplyHistoryCells(const std::string& text, HistoryLayer* history) {
+  if (history == nullptr || !history->IsValid()) {
+    return;
+  }
+  const std::regex history_pattern(
+      R"(\{\s*x0\s*:\s*([0-9]+)\s*,\s*y0\s*:\s*([0-9]+)\s*,\s*x1\s*:\s*([0-9]+)\s*,\s*y1\s*:\s*([0-9]+)\s*,\s*type\s*:\s*([A-Za-z_]+)\s*\})");
+  auto begin = std::sregex_iterator(text.begin(), text.end(), history_pattern);
+  auto end = std::sregex_iterator();
+  for (auto it = begin; it != end; ++it) {
+    const int x0 = std::stoi((*it)[1].str());
+    const int y0 = std::stoi((*it)[2].str());
+    const int x1 = std::stoi((*it)[3].str());
+    const int y1 = std::stoi((*it)[4].str());
+    const std::string type = (*it)[5].str();
+    for (int y = y0; y <= y1; ++y) {
+      for (int x = x0; x <= x1; ++x) {
+        const Point2D center = history->index().CellCenter(x, y);
+        if (type == "visited") {
+          history->MarkVisited(center.x, center.y);
+        } else if (type == "obstacle" || type == "historical_obstacle") {
+          history->MarkHistoricalObstacle(center.x, center.y);
+        } else if (type == "failed" || type == "failed_region") {
+          history->MarkFailedRegion(center.x, center.y);
+        }
+      }
+    }
+  }
+}
+
 }  // namespace
 
 PlanningScenario ScenarioReader::Read(const std::string& path) const {
@@ -107,8 +136,10 @@ PlanningScenario ScenarioReader::Read(const std::string& path) const {
   const GridIndex index(width, height, resolution_m);
   scenario.occupancy = OccupancyGrid(index, OccupancyGrid::kFree);
   scenario.elevation = ElevationGrid(index, 0.0);
+  scenario.history = HistoryLayer(index);
   ApplyObstacleCells(text, &scenario.occupancy);
   ApplySlopeRegions(text, &scenario.elevation);
+  ApplyHistoryCells(text, &scenario.history);
 
   scenario.request.start.x = ReadInlineDouble(text, "start", "x", 2.0);
   scenario.request.start.y = ReadInlineDouble(text, "start", "y", 4.0);
@@ -131,6 +162,7 @@ PlanningScenario ScenarioReader::DefaultScenario() const {
   scenario.request.goal.yaw = 0.0;
   scenario.occupancy = OccupancyGrid(GridIndex(160, 80, 0.1), OccupancyGrid::kFree);
   scenario.elevation = ElevationGrid(scenario.occupancy.index(), 0.0);
+  scenario.history = HistoryLayer(scenario.occupancy.index());
   for (int y = 70; y < 75; ++y) {
     scenario.occupancy.SetCell(70, y, OccupancyGrid::kOccupied);
   }

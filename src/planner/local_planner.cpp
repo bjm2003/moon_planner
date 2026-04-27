@@ -22,8 +22,15 @@ PlanningResult LocalPlanner::Plan(const PlanningRequest& request, const Occupanc
 PlanningResult LocalPlanner::Plan(const PlanningRequest& request,
                                   const OccupancyGrid& occupancy,
                                   const ElevationGrid* elevation) {
+  return Plan(request, occupancy, elevation, nullptr);
+}
+
+PlanningResult LocalPlanner::Plan(const PlanningRequest& request,
+                                  const OccupancyGrid& occupancy,
+                                  const ElevationGrid* elevation,
+                                  const HistoryLayer* history) {
   const PlanningRequest local_request = BuildLocalRequest(request);
-  PlanningResult result = lattice_planner_.Plan(local_request, occupancy, elevation);
+  PlanningResult result = lattice_planner_.Plan(local_request, occupancy, elevation, history);
   const double original_goal_distance = Distance2D(request.start.x, request.start.y, request.goal.x, request.goal.y);
   if (original_goal_distance > planner_config_.planning_horizon_m && result.status == PlannerStatus::kSuccess) {
     result.diagnostics.message = "local horizon target reached; " + result.diagnostics.message;

@@ -13,6 +13,10 @@ class LocalPlanner : public PlannerInterface {
 
   PlanningResult Plan(const PlanningRequest& request, const OccupancyGrid& occupancy) override;
   PlanningResult Plan(const PlanningRequest& request, const OccupancyGrid& occupancy, const ElevationGrid* elevation);
+  PlanningResult Plan(const PlanningRequest& request,
+                      const OccupancyGrid& occupancy,
+                      const ElevationGrid* elevation,
+                      const HistoryLayer* history);
 
   PlanningRequest BuildLocalRequest(const PlanningRequest& request) const;
 

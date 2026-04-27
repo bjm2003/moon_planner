@@ -10,6 +10,7 @@ class HistoryLayer {
  public:
   explicit HistoryLayer(GridIndex index = {});
 
+  const GridIndex& index() const { return index_; }
   bool IsValid() const;
   void MarkVisited(double x_m, double y_m);
   void MarkHistoricalObstacle(double x_m, double y_m);

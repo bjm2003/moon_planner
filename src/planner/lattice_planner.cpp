@@ -24,9 +24,16 @@ PlanningResult LatticePlanner::Plan(const PlanningRequest& request, const Occupa
 PlanningResult LatticePlanner::Plan(const PlanningRequest& request,
                                     const OccupancyGrid& occupancy,
                                     const ElevationGrid* elevation) {
+  return Plan(request, occupancy, elevation, nullptr);
+}
+
+PlanningResult LatticePlanner::Plan(const PlanningRequest& request,
+                                    const OccupancyGrid& occupancy,
+                                    const ElevationGrid* elevation,
+                                    const HistoryLayer* history) {
   MapFusion map_fusion;
-  CostMap cost_map =
-      map_fusion.BuildCostMap(occupancy, elevation, 0.5, 1.0, vehicle_config_.max_slope_rad, cost_config_.slope);
+  CostMap cost_map = map_fusion.BuildCostMap(occupancy, elevation, 0.5, 1.0, vehicle_config_.max_slope_rad,
+                                             cost_config_.slope, history, cost_config_.history);
   HybridAStar search(planner_config_, cost_config_, CollisionChecker(Footprint(vehicle_config_)));
   PlanningResult result = search.Plan(request, occupancy, cost_map, primitive_library_);
   TrajectoryGenerator generator;

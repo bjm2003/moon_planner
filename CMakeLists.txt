@@ -115,3 +115,8 @@ add_executable(test_planner_slope_map tests/integration/test_planner_slope_map.c
 target_link_libraries(test_planner_slope_map PRIVATE moon_planner_core)
 add_test(NAME test_planner_slope_map COMMAND test_planner_slope_map)
 set_tests_properties(test_planner_slope_map PROPERTIES WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
+
+add_executable(test_planner_history_obstacles tests/integration/test_planner_history_obstacles.cpp)
+target_link_libraries(test_planner_history_obstacles PRIVATE moon_planner_core)
+add_test(NAME test_planner_history_obstacles COMMAND test_planner_history_obstacles)
+set_tests_properties(test_planner_history_obstacles PROPERTIES WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
