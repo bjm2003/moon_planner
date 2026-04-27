@@ -1,6 +1,8 @@
 # 数据格式
 
-当前阶段已支持轻量 YAML 场景和 CSV 轨迹输出。
+当前阶段已支持轻量 YAML 场景、默认 YAML 配置和 CSV 轨迹输出。
+
+配置 YAML 当前支持顶层键值、bool、数字和数字数组，已用于 `config/planner_default.yaml`、`config/vehicle_default.yaml`、`config/cost_weights_default.yaml` 和 `config/primitive_default.yaml`。
 
 场景 YAML 字段：
 

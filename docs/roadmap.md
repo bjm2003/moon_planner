@@ -13,14 +13,14 @@
 - 车辆与运动：滑移转向积分、运动约束、运动基元生成和基元库查询。
 - 风险建模：多边形车体足迹碰撞、占据障碍、安全距离膨胀、坡度代价和坡度超限 lethal cost。
 - 搜索规划：最小 Hybrid A*/状态栅格搜索、路径回溯、轨迹生成。
-- 应用入口：`moon_planner_cli` 支持默认场景和轻量 YAML 场景。
+- 应用入口：`moon_planner_cli` 支持默认场景、轻量 YAML 场景和默认配置文件。
 - 局部规划：`LocalPlanner` 支持按 `planning_horizon_m` 裁剪远距离目标。
 - 场景与测试：平坦、密集障碍、坡度场景，以及对应单元/集成测试。
 
 ## 主要遗漏
 
-- 配置文件尚未真正驱动运行参数，默认值仍主要来自 C++ 结构体。
-- 轻量 YAML 解析依赖正则，只适合当前场景子集；复杂配置需要更稳健的解析策略。
+- 配置文件已驱动 CLI、基元生成和 benchmark 的默认参数，但 YAML loader 仍只支持顶层键值、bool、数字和数字数组。
+- 场景 YAML 解析仍依赖正则，只适合当前场景子集；复杂场景需要更稳健的解析策略。
 - `HistoryLayer` 只有已访问格惩罚，没有历史障碍衰减、失败区域记忆和视场外障碍管理。
 - `RecoveryPlanner` 目前只有 emergency stop，没有近障卡滞检测、后退、侧向重试或局部目标切换。
 - 诊断指标不足，缺少最小障碍距离、最大坡度、代价分量、失败原因分类和场景统计。
@@ -31,9 +31,9 @@
 
 ### 阶段 A：配置闭环
 
-- 实现 `YamlLoader` 的基础键值读取能力。
-- 将 `config/planner_default.yaml`、`vehicle_default.yaml`、`cost_weights_default.yaml`、`primitive_default.yaml` 接入 CLI 和工具。
-- 增加配置加载测试，确保默认 C++ 参数和 YAML 参数可对齐。
+- 已完成 `YamlLoader` 的基础键值读取能力。
+- 已将 `config/planner_default.yaml`、`vehicle_default.yaml`、`cost_weights_default.yaml`、`primitive_default.yaml` 接入 CLI 和工具。
+- 已增加配置加载测试，确保默认 C++ 参数和 YAML 参数可对齐。
 
 ### 阶段 B：历史层和恢复规划
 

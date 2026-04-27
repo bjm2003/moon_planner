@@ -511,7 +511,7 @@ moon_planner/
 
 - CMake/C++17 核心库 `moon_planner_core`。
 - 基础类型、状态码、几何工具、耗时统计。
-- 规划、车辆、代价配置结构体。
+- 规划、车辆、代价和运动基元配置结构体，以及默认 YAML 配置加载。
 - 栅格索引、二维占据栅格、高程栅格、通行性代价图、基础历史层和地图融合。
 - 滑移转向运动学积分、运动约束、运动基元生成和基元库查询。
 - 多边形车体足迹碰撞检测、基元代价、欧氏距离启发式。
@@ -522,7 +522,7 @@ moon_planner/
 - 轨迹生成、CSV 输出、诊断格式化。
 - CLI：`moon_planner_cli`，支持默认场景和 `scenarios/*.yaml` 输入。
 - 工具：`generate_primitives`、`benchmark_planner`。
-- 测试：`test_grid_index`、`test_skid_steer_model`、`test_collision_checker`、`test_cost_map`、`test_local_planner`、`test_scenario_reader`、`test_planner_flat_map`、`test_planner_dense_obstacles`、`test_planner_slope_map`。
+- 测试：`test_grid_index`、`test_skid_steer_model`、`test_collision_checker`、`test_cost_map`、`test_local_planner`、`test_yaml_loader`、`test_scenario_reader`、`test_planner_flat_map`、`test_planner_dense_obstacles`、`test_planner_slope_map`。
 
 当前验证命令：
 
@@ -539,7 +539,7 @@ ctest --test-dir build --output-on-failure
 
 最近一次验证结果：
 
-- `ctest`：9/9 通过。
+- `ctest`：10/10 通过。
 - `moon_planner_cli` 默认场景：返回 `status=success`，扩展节点 100，轨迹点 20。
 - `moon_planner_cli scenarios/dense_obstacles.yaml /tmp/moon_dense_trajectory.csv`：返回 `status=success`，扩展节点 100，轨迹点 20。
 - `moon_planner_cli scenarios/slope_region.yaml /tmp/moon_slope_trajectory.csv`：返回 `status=success`，扩展节点 100，轨迹点 20。
@@ -548,7 +548,7 @@ ctest --test-dir build --output-on-failure
 
 当前限制：
 
-- 配置文件已创建，但尚未实现完整 YAML 参数解析，默认参数仍来自 C++ 结构体。
+- 配置文件已接入 CLI 和工具；当前 YAML loader 只支持顶层键值、bool、数字和数字数组，不支持嵌套 YAML。
 - 碰撞检测已采用多边形车体足迹，但尚未加入更完整的分离轴边交检测和动态安全裕度。
 - 搜索启发式当前为欧氏距离，后续应加入航向代价、HLUT 或 Reeds-Shepp/Dubins 近似。
 - `LocalPlanner` 目前实现局部目标裁剪，尚未加入动态障碍局部避让和恢复动作。

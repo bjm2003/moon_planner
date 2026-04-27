@@ -3,6 +3,7 @@
 #include "moon_planner/config/vehicle_config.hpp"
 #include "moon_planner/io/scenario_reader.hpp"
 #include "moon_planner/io/trajectory_writer.hpp"
+#include "moon_planner/io/yaml_loader.hpp"
 #include "moon_planner/model/motion_constraints.hpp"
 #include "moon_planner/planner/lattice_planner.hpp"
 #include "moon_planner/primitives/primitive_generator.hpp"
@@ -24,10 +25,10 @@ bool HasYamlExtension(const std::string& path) {
 int main(int argc, char** argv) {
   using namespace moon_planner;
 
-  PlannerConfig planner_config;
-  VehicleConfig vehicle_config;
-  CostConfig cost_config;
-  PrimitiveGenerationConfig primitive_config;
+  PlannerConfig planner_config = LoadPlannerConfig("config/planner_default.yaml");
+  VehicleConfig vehicle_config = LoadVehicleConfig("config/vehicle_default.yaml");
+  CostConfig cost_config = LoadCostConfig("config/cost_weights_default.yaml");
+  PrimitiveGenerationConfig primitive_config = LoadPrimitiveGenerationConfig("config/primitive_default.yaml");
 
   MotionConstraints constraints(vehicle_config);
   PrimitiveGenerator generator;
