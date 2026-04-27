@@ -519,10 +519,11 @@ moon_planner/
 - 最小状态栅格/Hybrid A* 搜索链路。
 - `LatticePlanner` 统一规划器入口。
 - `LocalPlanner` 局部规划入口，支持按 `planning_horizon_m` 裁剪远距离目标并接收历史层代价。
+- `RecoveryPlanner` 恢复规划入口，支持急停和短距离后退恢复轨迹。
 - 轨迹生成、CSV 输出、诊断格式化。
 - CLI：`moon_planner_cli`，支持默认场景和 `scenarios/*.yaml` 输入。
 - 工具：`generate_primitives`、`benchmark_planner`。
-- 测试：`test_grid_index`、`test_skid_steer_model`、`test_collision_checker`、`test_cost_map`、`test_local_planner`、`test_history_layer`、`test_yaml_loader`、`test_scenario_reader`、`test_planner_flat_map`、`test_planner_dense_obstacles`、`test_planner_slope_map`、`test_planner_history_obstacles`。
+- 测试：`test_grid_index`、`test_skid_steer_model`、`test_collision_checker`、`test_cost_map`、`test_local_planner`、`test_history_layer`、`test_recovery_planner`、`test_yaml_loader`、`test_scenario_reader`、`test_planner_flat_map`、`test_planner_dense_obstacles`、`test_planner_slope_map`、`test_planner_history_obstacles`、`test_near_obstacle_recovery`。
 
 当前验证命令：
 
@@ -540,7 +541,7 @@ ctest --test-dir build --output-on-failure
 
 最近一次验证结果：
 
-- `ctest`：12/12 通过。
+- `ctest`：14/14 通过。
 - `moon_planner_cli` 默认场景：返回 `status=success`，扩展节点 100，轨迹点 20。
 - `moon_planner_cli scenarios/dense_obstacles.yaml /tmp/moon_dense_trajectory.csv`：返回 `status=success`，扩展节点 100，轨迹点 20。
 - `moon_planner_cli scenarios/slope_region.yaml /tmp/moon_slope_trajectory.csv`：返回 `status=success`，扩展节点 100，轨迹点 20。
@@ -555,11 +556,12 @@ ctest --test-dir build --output-on-failure
 - 搜索启发式当前为欧氏距离，后续应加入航向代价、HLUT 或 Reeds-Shepp/Dubins 近似。
 - `LocalPlanner` 目前实现局部目标裁剪，尚未加入动态障碍局部避让和恢复动作。
 - 历史层已有权重、衰减和场景输入能力，但尚未由运行时上下文自动维护。
-- 近障恢复和多分辨率实验仍待实现。
+- 近障恢复已有急停和短距离后退轨迹，尚未实现循环检测、侧向重试和恢复候选评估。
+- 多分辨率实验仍待实现。
 
 总体路线复盘和后续阶段规划见 `docs/roadmap.md`。
 
 下一阶段计划：
 
-- 为 `RecoveryPlanner` 增加近障恢复入口：检测局部目标失败后生成后退或侧向重试请求。
-- 增加历史障碍和近障恢复集成测试。
+- 扩展 `RecoveryPlanner`：增加侧向重试候选、恢复候选碰撞检查和局部规划失败后的自动恢复调度。
+- 扩展诊断指标：最小障碍距离、最大坡度、恢复触发原因和代价分量。

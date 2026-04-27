@@ -92,6 +92,10 @@ add_executable(test_history_layer tests/unit/test_history_layer.cpp)
 target_link_libraries(test_history_layer PRIVATE moon_planner_core)
 add_test(NAME test_history_layer COMMAND test_history_layer)
 
+add_executable(test_recovery_planner tests/unit/test_recovery_planner.cpp)
+target_link_libraries(test_recovery_planner PRIVATE moon_planner_core)
+add_test(NAME test_recovery_planner COMMAND test_recovery_planner)
+
 add_executable(test_yaml_loader tests/unit/test_yaml_loader.cpp)
 target_link_libraries(test_yaml_loader PRIVATE moon_planner_core)
 add_test(NAME test_yaml_loader COMMAND test_yaml_loader)
@@ -120,3 +124,7 @@ add_executable(test_planner_history_obstacles tests/integration/test_planner_his
 target_link_libraries(test_planner_history_obstacles PRIVATE moon_planner_core)
 add_test(NAME test_planner_history_obstacles COMMAND test_planner_history_obstacles)
 set_tests_properties(test_planner_history_obstacles PROPERTIES WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
+
+add_executable(test_near_obstacle_recovery tests/integration/test_near_obstacle_recovery.cpp)
+target_link_libraries(test_near_obstacle_recovery PRIVATE moon_planner_core)
+add_test(NAME test_near_obstacle_recovery COMMAND test_near_obstacle_recovery)
