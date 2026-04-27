@@ -88,6 +88,10 @@ add_executable(test_local_planner tests/unit/test_local_planner.cpp)
 target_link_libraries(test_local_planner PRIVATE moon_planner_core)
 add_test(NAME test_local_planner COMMAND test_local_planner)
 
+add_executable(test_history_layer tests/unit/test_history_layer.cpp)
+target_link_libraries(test_history_layer PRIVATE moon_planner_core)
+add_test(NAME test_history_layer COMMAND test_history_layer)
+
 add_executable(test_yaml_loader tests/unit/test_yaml_loader.cpp)
 target_link_libraries(test_yaml_loader PRIVATE moon_planner_core)
 add_test(NAME test_yaml_loader COMMAND test_yaml_loader)

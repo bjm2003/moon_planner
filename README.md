@@ -512,7 +512,7 @@ moon_planner/
 - CMake/C++17 核心库 `moon_planner_core`。
 - 基础类型、状态码、几何工具、耗时统计。
 - 规划、车辆、代价和运动基元配置结构体，以及默认 YAML 配置加载。
-- 栅格索引、二维占据栅格、高程栅格、通行性代价图、基础历史层和地图融合。
+- 栅格索引、二维占据栅格、高程栅格、通行性代价图、连续权重历史层和地图融合。
 - 滑移转向运动学积分、运动约束、运动基元生成和基元库查询。
 - 多边形车体足迹碰撞检测、基元代价、欧氏距离启发式。
 - 占据障碍、安全距离膨胀和坡度代价地图。
@@ -522,7 +522,7 @@ moon_planner/
 - 轨迹生成、CSV 输出、诊断格式化。
 - CLI：`moon_planner_cli`，支持默认场景和 `scenarios/*.yaml` 输入。
 - 工具：`generate_primitives`、`benchmark_planner`。
-- 测试：`test_grid_index`、`test_skid_steer_model`、`test_collision_checker`、`test_cost_map`、`test_local_planner`、`test_yaml_loader`、`test_scenario_reader`、`test_planner_flat_map`、`test_planner_dense_obstacles`、`test_planner_slope_map`。
+- 测试：`test_grid_index`、`test_skid_steer_model`、`test_collision_checker`、`test_cost_map`、`test_local_planner`、`test_history_layer`、`test_yaml_loader`、`test_scenario_reader`、`test_planner_flat_map`、`test_planner_dense_obstacles`、`test_planner_slope_map`。
 
 当前验证命令：
 
@@ -539,7 +539,7 @@ ctest --test-dir build --output-on-failure
 
 最近一次验证结果：
 
-- `ctest`：10/10 通过。
+- `ctest`：11/11 通过。
 - `moon_planner_cli` 默认场景：返回 `status=success`，扩展节点 100，轨迹点 20。
 - `moon_planner_cli scenarios/dense_obstacles.yaml /tmp/moon_dense_trajectory.csv`：返回 `status=success`，扩展节点 100，轨迹点 20。
 - `moon_planner_cli scenarios/slope_region.yaml /tmp/moon_slope_trajectory.csv`：返回 `status=success`，扩展节点 100，轨迹点 20。
@@ -552,12 +552,13 @@ ctest --test-dir build --output-on-failure
 - 碰撞检测已采用多边形车体足迹，但尚未加入更完整的分离轴边交检测和动态安全裕度。
 - 搜索启发式当前为欧氏距离，后续应加入航向代价、HLUT 或 Reeds-Shepp/Dubins 近似。
 - `LocalPlanner` 目前实现局部目标裁剪，尚未加入动态障碍局部避让和恢复动作。
-- 近障恢复、历史障碍衰减和多分辨率实验仍待实现。
+- 历史层已有权重和衰减能力，但尚未从场景/运行时上下文自动维护。
+- 近障恢复和多分辨率实验仍待实现。
 
 总体路线复盘和后续阶段规划见 `docs/roadmap.md`。
 
 下一阶段计划：
 
-- 扩展 `HistoryLayer`，支持历史障碍和已访问区域衰减。
-- 将历史层接入 `MapFusion`，让搜索能避开近期失败/重复区域。
+- 将 `HistoryLayer` 接入规划上下文或场景输入，形成可复现的历史障碍规划场景。
 - 为 `RecoveryPlanner` 增加近障恢复入口：检测局部目标失败后生成后退或侧向重试请求。
+- 增加历史障碍和近障恢复集成测试。
