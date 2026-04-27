@@ -2,17 +2,17 @@
 
 namespace moon_planner {
 
-CostMap MapFusion::BuildCostMap(const OccupancyGrid& occupancy, const ElevationGrid* elevation) const {
+CostMap MapFusion::BuildCostMap(const OccupancyGrid& occupancy,
+                                 const ElevationGrid* elevation,
+                                 double obstacle_influence_radius_m,
+                                 double obstacle_max_cost,
+                                 double max_slope_rad,
+                                 double slope_max_cost) const {
   CostMap cost_map(occupancy.index(), 0.0);
   cost_map.ApplyOccupancy(occupancy);
+  cost_map.ApplyObstacleDistanceCost(occupancy, obstacle_influence_radius_m, obstacle_max_cost);
   if (elevation != nullptr && elevation->IsValid()) {
-    for (int y = 0; y < occupancy.index().height(); ++y) {
-      for (int x = 0; x < occupancy.index().width(); ++x) {
-        if (!cost_map.IsLethal(x, y)) {
-          cost_map.SetCost(x, y, cost_map.Cost(x, y) + elevation->SlopeMagnitude(x, y));
-        }
-      }
-    }
+    cost_map.ApplySlopeCost(*elevation, max_slope_rad, slope_max_cost);
   }
   return cost_map;
 }

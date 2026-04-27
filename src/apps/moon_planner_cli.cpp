@@ -59,7 +59,7 @@ int main(int argc, char** argv) {
   request.goal_tolerance_yaw_rad = planner_config.goal_tolerance_yaw_rad;
 
   LatticePlanner planner(planner_config, vehicle_config, cost_config, std::move(library));
-  PlanningResult result = planner.Plan(request, scenario.occupancy);
+  PlanningResult result = planner.Plan(request, scenario.occupancy, &scenario.elevation);
 
   std::cout << "scenario=" << scenario.name << '\n';
   std::cout << "status=" << ToString(result.status) << '\n';

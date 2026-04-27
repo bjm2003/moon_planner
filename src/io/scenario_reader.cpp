@@ -1,6 +1,7 @@
 #include "moon_planner/io/scenario_reader.hpp"
 
 #include <fstream>
+#include <cmath>
 #include <regex>
 #include <sstream>
 #include <stdexcept>
@@ -68,6 +69,31 @@ void ApplyObstacleCells(const std::string& text, OccupancyGrid* occupancy) {
   }
 }
 
+void ApplySlopeRegions(const std::string& text, ElevationGrid* elevation) {
+  if (elevation == nullptr || !elevation->IsValid()) {
+    return;
+  }
+  const std::regex slope_pattern(
+      R"(\{\s*x0\s*:\s*([0-9]+)\s*,\s*y0\s*:\s*([0-9]+)\s*,\s*x1\s*:\s*([0-9]+)\s*,\s*y1\s*:\s*([0-9]+)\s*,\s*slope_rad\s*:\s*(-?[0-9]+(?:\.[0-9]+)?)\s*(?:,\s*axis\s*:\s*([xy]))?\s*\})");
+  auto begin = std::sregex_iterator(text.begin(), text.end(), slope_pattern);
+  auto end = std::sregex_iterator();
+  for (auto it = begin; it != end; ++it) {
+    const int x0 = std::stoi((*it)[1].str());
+    const int y0 = std::stoi((*it)[2].str());
+    const int x1 = std::stoi((*it)[3].str());
+    const int y1 = std::stoi((*it)[4].str());
+    const double slope_rad = std::stod((*it)[5].str());
+    const char axis = (*it)[6].matched ? (*it)[6].str()[0] : 'x';
+    const double height_step_m = std::tan(slope_rad) * elevation->index().resolution_m();
+    for (int y = y0; y <= y1; ++y) {
+      for (int x = x0; x <= x1; ++x) {
+        const int offset_cells = axis == 'y' ? y - y0 : x - x0;
+        elevation->SetHeight(x, y, height_step_m * static_cast<double>(offset_cells));
+      }
+    }
+  }
+}
+
 }  // namespace
 
 PlanningScenario ScenarioReader::Read(const std::string& path) const {
@@ -78,8 +104,11 @@ PlanningScenario ScenarioReader::Read(const std::string& path) const {
   const int width = ReadInt(text, "width", 160);
   const int height = ReadInt(text, "height", 80);
   const double resolution_m = ReadDouble(text, "resolution_m", 0.1);
-  scenario.occupancy = OccupancyGrid(GridIndex(width, height, resolution_m), OccupancyGrid::kFree);
+  const GridIndex index(width, height, resolution_m);
+  scenario.occupancy = OccupancyGrid(index, OccupancyGrid::kFree);
+  scenario.elevation = ElevationGrid(index, 0.0);
   ApplyObstacleCells(text, &scenario.occupancy);
+  ApplySlopeRegions(text, &scenario.elevation);
 
   scenario.request.start.x = ReadInlineDouble(text, "start", "x", 2.0);
   scenario.request.start.y = ReadInlineDouble(text, "start", "y", 4.0);
@@ -101,6 +130,7 @@ PlanningScenario ScenarioReader::DefaultScenario() const {
   scenario.request.goal.y = 4.0;
   scenario.request.goal.yaw = 0.0;
   scenario.occupancy = OccupancyGrid(GridIndex(160, 80, 0.1), OccupancyGrid::kFree);
+  scenario.elevation = ElevationGrid(scenario.occupancy.index(), 0.0);
   for (int y = 70; y < 75; ++y) {
     scenario.occupancy.SetCell(70, y, OccupancyGrid::kOccupied);
   }

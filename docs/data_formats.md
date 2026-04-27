@@ -9,6 +9,7 @@
 - `start: {x, y, yaw}`：起始状态。
 - `goal: {x, y, yaw}`：目标状态。
 - `obstacle_cells`：占据栅格矩形闭区间列表，格式为 `{x0, y0, x1, y1}`。
+- `slope_regions`：坡度矩形闭区间列表，格式为 `{x0, y0, x1, y1, slope_rad, axis}`，当前用于生成简化高程栅格，坡度超过车辆限制的区域会进入 lethal cost。
 
 轨迹 CSV 字段：
 
@@ -16,4 +17,4 @@
 t,x,y,z,yaw,v,omega
 ```
 
-后续需要补充 DEM/坡度图、历史障碍层、运动基元库二进制格式和 benchmark 结果格式。
+后续需要补充完整 DEM 文件、历史障碍层、运动基元库二进制格式和 benchmark 结果格式。

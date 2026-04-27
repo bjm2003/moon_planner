@@ -1,6 +1,7 @@
 #pragma once
 
 #include "moon_planner/core/types.hpp"
+#include "moon_planner/map/elevation_grid.hpp"
 #include "moon_planner/map/occupancy_grid.hpp"
 
 #include <string>
@@ -11,6 +12,7 @@ struct PlanningScenario {
   std::string name{"default"};
   PlanningRequest request;
   OccupancyGrid occupancy;
+  ElevationGrid elevation;
 };
 
 class ScenarioReader {

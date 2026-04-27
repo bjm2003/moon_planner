@@ -12,5 +12,9 @@ int main() {
   assert(std::abs(scenario.occupancy.index().resolution_m() - 0.1) < 1e-9);
   assert(std::abs(scenario.request.start.x - 2.0) < 1e-9);
   assert(std::abs(scenario.request.goal.x - 13.0) < 1e-9);
+
+  const auto slope_scenario = reader.Read("scenarios/slope_region.yaml");
+  assert(slope_scenario.elevation.IsValid());
+  assert(slope_scenario.elevation.SlopeMagnitude(80, 15) > 0.35);
   return 0;
 }

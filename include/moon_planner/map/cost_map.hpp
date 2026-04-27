@@ -1,5 +1,6 @@
 #pragma once
 
+#include "moon_planner/map/elevation_grid.hpp"
 #include "moon_planner/map/occupancy_grid.hpp"
 
 #include <vector>
@@ -21,6 +22,8 @@ class CostMap {
   double CostWorld(double x_m, double y_m) const;
   bool IsLethal(int x, int y) const;
   void ApplyOccupancy(const OccupancyGrid& occupancy);
+  void ApplyObstacleDistanceCost(const OccupancyGrid& occupancy, double influence_radius_m, double max_cost);
+  void ApplySlopeCost(const ElevationGrid& elevation, double max_slope_rad, double max_cost);
 
  private:
   GridIndex index_;

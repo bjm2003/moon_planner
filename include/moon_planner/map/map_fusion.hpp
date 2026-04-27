@@ -7,7 +7,12 @@ namespace moon_planner {
 
 class MapFusion {
  public:
-  CostMap BuildCostMap(const OccupancyGrid& occupancy, const ElevationGrid* elevation = nullptr) const;
+  CostMap BuildCostMap(const OccupancyGrid& occupancy,
+                       const ElevationGrid* elevation = nullptr,
+                       double obstacle_influence_radius_m = 0.5,
+                       double obstacle_max_cost = 1.0,
+                       double max_slope_rad = 0.35,
+                       double slope_max_cost = 1.0) const;
 };
 
 }  // namespace moon_planner

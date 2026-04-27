@@ -12,7 +12,7 @@ int main() {
   vehicle_config.length_m = 1.0;
   vehicle_config.width_m = 0.6;
   vehicle_config.safety_margin_m = 0.0;
-  CollisionChecker checker(Footprint(vehicle_config));
+  CollisionChecker checker{Footprint(vehicle_config)};
   OccupancyGrid occupancy(GridIndex(100, 100, 0.1), OccupancyGrid::kFree);
 
   State state;

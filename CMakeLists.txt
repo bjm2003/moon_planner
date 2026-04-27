@@ -80,9 +80,18 @@ add_executable(test_collision_checker tests/unit/test_collision_checker.cpp)
 target_link_libraries(test_collision_checker PRIVATE moon_planner_core)
 add_test(NAME test_collision_checker COMMAND test_collision_checker)
 
+add_executable(test_cost_map tests/unit/test_cost_map.cpp)
+target_link_libraries(test_cost_map PRIVATE moon_planner_core)
+add_test(NAME test_cost_map COMMAND test_cost_map)
+
+add_executable(test_local_planner tests/unit/test_local_planner.cpp)
+target_link_libraries(test_local_planner PRIVATE moon_planner_core)
+add_test(NAME test_local_planner COMMAND test_local_planner)
+
 add_executable(test_scenario_reader tests/unit/test_scenario_reader.cpp)
 target_link_libraries(test_scenario_reader PRIVATE moon_planner_core)
 add_test(NAME test_scenario_reader COMMAND test_scenario_reader)
+set_tests_properties(test_scenario_reader PROPERTIES WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
 
 add_executable(test_planner_flat_map tests/integration/test_planner_flat_map.cpp)
 target_link_libraries(test_planner_flat_map PRIVATE moon_planner_core)
@@ -91,3 +100,9 @@ add_test(NAME test_planner_flat_map COMMAND test_planner_flat_map)
 add_executable(test_planner_dense_obstacles tests/integration/test_planner_dense_obstacles.cpp)
 target_link_libraries(test_planner_dense_obstacles PRIVATE moon_planner_core)
 add_test(NAME test_planner_dense_obstacles COMMAND test_planner_dense_obstacles)
+set_tests_properties(test_planner_dense_obstacles PROPERTIES WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
+
+add_executable(test_planner_slope_map tests/integration/test_planner_slope_map.cpp)
+target_link_libraries(test_planner_slope_map PRIVATE moon_planner_core)
+add_test(NAME test_planner_slope_map COMMAND test_planner_slope_map)
+set_tests_properties(test_planner_slope_map PROPERTIES WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
